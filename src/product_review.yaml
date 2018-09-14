@@ -1,0 +1,145 @@
+swagger: "2.0"
+
+
+info:
+  description: "The Product Review chaincode captures and lists reviews of specific products"
+  version: "1.0"
+  title: "Product Review!"
+
+
+consumes:
+  - application/x-www-form-urlencoded
+produces:
+  - application/json
+
+
+parameters:
+
+  id:
+    name: id
+    in: path
+    description: ID of the message
+    required: true
+    type: string
+    maxLength: 64
+
+  text:
+    name: text
+    in: formData
+    description: Product Text
+    required: true
+    type: string
+    maxLength: 255
+
+  review:
+    name: review
+    in: formData
+    description: product review
+    required: true
+    type: string
+    maxLength: 64
+
+  name:
+    name: name
+    in: formData
+    description: reviewer name
+    required: true
+    type: string
+    maxLength: 64
+  
+  location:
+    name: location
+    in: formData
+    description: reviewer location
+    required: true
+    type: string
+    maxLength: 64
+
+  rating:
+    name: rating
+    in: formData
+    description: rating
+    required: true
+    type: string
+    maxLength: 64
+
+paths:
+
+  /{id}:
+
+    get:
+      operationId: read
+      summary: Read text by ID
+      parameters:
+      - $ref: '#/parameters/id'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              text: 
+                type: string
+        400:
+          description: Parameter Mismatch
+        404:
+          description: Not Found
+
+
+    post:
+      operationId: create
+      summary: Creates a text by ID 
+      parameters:
+      - $ref: '#/parameters/id'
+      - $ref: '#/parameters/text'
+      - $ref: '#/parameters/review'
+      - $ref: '#/parameters/name'
+      - $ref: '#/parameters/location'
+      - $ref: '#/parameters/rating' 
+      responses:
+        201:
+          description: Text Created
+        400:
+          description: Parameter Mismatch
+        409:
+          description: Text Already Exists
+
+
+  /search/{wildcard}:
+
+    get:
+      operationId: search
+      summary: Find text by wildcard search in the text strings
+      description: Search for all matching IDs, given a (regex) value expression and return both the IDs and text. For example '^H.llo' will match any string starting with 'Hello' or 'Hallo'.
+      parameters:
+      - name: wildcard
+        in: path
+        description: Wildcard regular expression to match against texts
+        required: true
+        type: string
+        maxLength: 64
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              values:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    text:
+                      type: string
+                    review:
+                      type: string
+                    name:
+                      type: string
+                    location:
+                      type: string
+                    rating:
+                      type: string
+        400:
+          description: Parameter Mismatch
